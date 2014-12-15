@@ -39,8 +39,12 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.displayComboBox = new System.Windows.Forms.ComboBox();
 			this.openImageFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.fadeCheckBox = new System.Windows.Forms.CheckBox();
+			this.fadeLengthLabel = new System.Windows.Forms.Label();
+			this.fadeLegthInput = new System.Windows.Forms.NumericUpDown();
 			this.topBar.SuspendLayout();
 			this.mainContainer.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.fadeLegthInput)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// topBar
@@ -93,6 +97,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.mainContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.mainContainer.Controls.Add(this.fadeLegthInput);
+			this.mainContainer.Controls.Add(this.fadeLengthLabel);
+			this.mainContainer.Controls.Add(this.fadeCheckBox);
 			this.mainContainer.Controls.Add(this.curtainBtn);
 			this.mainContainer.Controls.Add(this.browseImageBtn);
 			this.mainContainer.Controls.Add(this.imageFileLabel);
@@ -145,7 +152,7 @@
 			// 
 			this.label2.AutoSize = true;
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.label2.Location = new System.Drawing.Point(10, 38);
+			this.label2.Location = new System.Drawing.Point(13, 38);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(99, 17);
 			this.label2.TabIndex = 1;
@@ -178,6 +185,50 @@
 			this.openImageFileDialog.Filter = "Image Files|*.png; *.jpg; *.bmp|All files|*.*";
 			this.openImageFileDialog.Title = "Choose Image...";
 			// 
+			// fadeCheckBox
+			// 
+			this.fadeCheckBox.AutoSize = true;
+			this.fadeCheckBox.Checked = true;
+			this.fadeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.fadeCheckBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+			this.fadeCheckBox.Location = new System.Drawing.Point(16, 65);
+			this.fadeCheckBox.Name = "fadeCheckBox";
+			this.fadeCheckBox.Size = new System.Drawing.Size(87, 19);
+			this.fadeCheckBox.TabIndex = 5;
+			this.fadeCheckBox.Text = "Fade Effect";
+			this.fadeCheckBox.UseVisualStyleBackColor = true;
+			this.fadeCheckBox.CheckStateChanged += new System.EventHandler(this.fadeCheckBox_CheckStateChanged);
+			// 
+			// fadeLengthLabel
+			// 
+			this.fadeLengthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.fadeLengthLabel.AutoSize = true;
+			this.fadeLengthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+			this.fadeLengthLabel.Location = new System.Drawing.Point(201, 66);
+			this.fadeLengthLabel.Name = "fadeLengthLabel";
+			this.fadeLengthLabel.Size = new System.Drawing.Size(89, 15);
+			this.fadeLengthLabel.TabIndex = 6;
+			this.fadeLengthLabel.Text = "Length (in ms):";
+			// 
+			// fadeLegthInput
+			// 
+			this.fadeLegthInput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.fadeLegthInput.Location = new System.Drawing.Point(312, 64);
+			this.fadeLegthInput.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+			this.fadeLegthInput.Name = "fadeLegthInput";
+			this.fadeLegthInput.Size = new System.Drawing.Size(73, 20);
+			this.fadeLegthInput.TabIndex = 7;
+			this.fadeLegthInput.ThousandsSeparator = true;
+			this.fadeLegthInput.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			// 
 			// mainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -193,6 +244,7 @@
 			this.topBar.ResumeLayout(false);
 			this.mainContainer.ResumeLayout(false);
 			this.mainContainer.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.fadeLegthInput)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -210,6 +262,9 @@
 		private System.Windows.Forms.Button browseImageBtn;
 		private System.Windows.Forms.OpenFileDialog openImageFileDialog;
 		private System.Windows.Forms.Label curtainBtn;
+		private System.Windows.Forms.CheckBox fadeCheckBox;
+		private System.Windows.Forms.Label fadeLengthLabel;
+		private System.Windows.Forms.NumericUpDown fadeLegthInput;
 	}
 }
 

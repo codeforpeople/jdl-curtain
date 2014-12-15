@@ -98,22 +98,6 @@ namespace JDL_Curtain
 			toggleCurtain();
 		}
 
-		private void curtainForm_Click(object sender, EventArgs e)
-		{
-			// Close form
-			Form f = (Form)sender;
-			f.Close();
-			updateCurtainState();
-		}
-
-		private void curtainFormControl_Click(object sender, EventArgs e)
-		{
-			// Close form
-			Control c = (Control)sender;
-			c.FindForm().Close();
-			updateCurtainState();
-		}
-
 		#endregion
 
 		/// <summary>
@@ -140,7 +124,7 @@ namespace JDL_Curtain
 		/// <summary>
 		/// Updates the button and isCurtainDeployed variable
 		/// </summary>
-		private void updateCurtainState()
+		public void updateCurtainState()
 		{
 			// Search for a curtain on the selected screen
 			bool exists = false;
@@ -204,51 +188,40 @@ namespace JDL_Curtain
 
 				if (selectedScreen != null)
 				{
-					// Create overlay form
-					Form curtainForm = new Form();
-					curtainForm.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+					// Create new form curtain 
+					curtainForm newCurtainForm = new curtainForm();
 
-					// Form is just a quarter of the screen (because I only have one screen to test on)
-					curtainForm.SetBounds(selectedScreen.Bounds.X, selectedScreen.Bounds.Y, selectedScreen.Bounds.Width / 2, selectedScreen.Bounds.Height / 2);
-					//curtainForm.WindowState = FormWindowState.Maximized;
+					// Add properties
+					// Name
+					newCurtainForm.Name = selectedScreen.DeviceName;
+					// Bounds
+					//newCurtainForm.Bounds = selectedScreen.Bounds;
+					newCurtainForm.SetBounds(selectedScreen.Bounds.X, selectedScreen.Bounds.Y, selectedScreen.Bounds.Width / 2, selectedScreen.Bounds.Height / 2);
+					// Fade length
+					if (fadeCheckBox.CheckState == CheckState.Checked)
+					{
+						newCurtainForm.fadeLength = (int)fadeLegthInput.Value;
+					}
+					else if (fadeCheckBox.CheckState == CheckState.Unchecked)
+					{
+						newCurtainForm.fadeLength = 0;
+					}
 
-					curtainForm.StartPosition = FormStartPosition.Manual;
-					curtainForm.TopMost = true;
-					// Name is used to identify on which screeen the form is
-					curtainForm.Name = selectedScreen.DeviceName;
-					curtainForm.Click += new EventHandler(curtainForm_Click);
-
-					// Create simple label
-					Label screenNameLabel = new Label();
-					screenNameLabel.Text = selectedScreen.DeviceName;
-					screenNameLabel.Font = new Font(screenNameLabel.Font.FontFamily, 10);
-					screenNameLabel.Left = curtainForm.Width / 2 - screenNameLabel.Width / 2;
-					screenNameLabel.Top = curtainForm.Height / 2 - screenNameLabel.Height / 2;
-					screenNameLabel.BackColor = Color.Transparent;
-					screenNameLabel.Click += new EventHandler(curtainFormControl_Click);
-
-					// Create image
-					PictureBox image = new PictureBox();
-					image.Image = Image.FromFile(imageFilePath);
-					image.Location = new Point(0, 0);
-					image.Width = curtainForm.Width;
-					image.Height = curtainForm.Height;
-					image.SizeMode = PictureBoxSizeMode.Zoom;
-					image.Click += new EventHandler(curtainFormControl_Click);
-				
-					// Add label and image
-					curtainForm.Controls.Add(image);
-					curtainForm.Controls.SetChildIndex(image, 0);
-					curtainForm.Controls.Add(screenNameLabel);
-					curtainForm.Controls.SetChildIndex(screenNameLabel, 1);
-
-					// Show form
-					curtainForm.Show();
+					// Load image and show form is successful
+					if (newCurtainForm.setImageFromPath(imageFilePath))
+					{
+						newCurtainForm.Show();
+					}
+					else
+					{
+						newCurtainForm.Close();
+					}
 				}
 				else
 				{
-					// This should only execute if the selected screen was disconnected
+					// The selected screen was disconnected
 					MessageBox.Show("Invalid Screen!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					// Refresh list
 					scanScreens();
 				}
 			}
@@ -272,20 +245,49 @@ namespace JDL_Curtain
 					{
 						if (form.Name == selectedScreen.DeviceName)
 						{
-							form.Close();
+							curtainForm f = (curtainForm)form;
+
+							// Set fade length
+							if (fadeCheckBox.CheckState == CheckState.Checked)
+							{
+								f.fadeLength = (int)fadeLegthInput.Value;
+							}
+							else if (fadeCheckBox.CheckState == CheckState.Unchecked)
+							{
+								f.fadeLength = 0;
+							}
+
+							// Close the form
+							f.closeForm();
 							break;
 						}
 					}
 				}
 				else
 				{
-					// This should only execute if the selected screen was disconnected
+					// The selected screen was disconnected
 					MessageBox.Show("Invalid Screen!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					// Refresh list
 					scanScreens();
 				}
 			}
 
 			updateCurtainState();
+		}
+
+		private void fadeCheckBox_CheckStateChanged(object sender, EventArgs e)
+		{
+			// Enable or disable fade length input and label
+			if (fadeCheckBox.CheckState == CheckState.Checked)
+			{
+				fadeLengthLabel.Enabled = true;
+				fadeLegthInput.Enabled = true;
+			}
+			else if (fadeCheckBox.CheckState == CheckState.Unchecked)
+			{
+				fadeLengthLabel.Enabled = false;
+				fadeLegthInput.Enabled = false;
+			}
 		}
 
 	}
