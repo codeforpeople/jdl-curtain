@@ -29,15 +29,15 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.effectTimer = new System.Windows.Forms.Timer(this.components);
+			this.updateTimer = new System.Windows.Forms.Timer(this.components);
 			this.imageBox = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// effectTimer
+			// updateTimer
 			// 
-			this.effectTimer.Interval = 20;
-			this.effectTimer.Tick += new System.EventHandler(this.effectTimer_Tick);
+			this.updateTimer.Interval = 20;
+			this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
 			// 
 			// imageBox
 			// 
@@ -75,7 +75,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.Timer effectTimer;
+		private System.Windows.Forms.Timer updateTimer;
 		private System.Windows.Forms.PictureBox imageBox;
 	}
 }

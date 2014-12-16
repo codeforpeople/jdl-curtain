@@ -7,17 +7,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace JDL_Curtain
 {
 	public partial class curtainForm : Form
 	{
-		// Used for fading the curtain in or out (from 0 to 1)
-		double transparency = 0;
+		// Whether to fade in or out
 		bool showImage;
 		// Fade effect length in miliseconds
 		public int fadeLength = 1000;
 
+		// Used if form is closed before the fade in animation finishes
+		long elapsedMiliseconds = 0;
+
+		// Avoids playing the fade out effect multiple times
+		bool closing = false;
+
+		Stopwatch stopWatch = new Stopwatch();
 
 		public curtainForm()
 		{
@@ -56,53 +63,63 @@ namespace JDL_Curtain
 		public void closeForm()
 		{
 			// Fade out
-			showImage = false;
-			effectTimer.Enabled = true;
+			if (!closing)
+			{
+				closing = true;
+				showImage = false;
+				elapsedMiliseconds = 0;
+				if (stopWatch.IsRunning)
+				{
+					elapsedMiliseconds = fadeLength - stopWatch.ElapsedMilliseconds;
+				}
+				stopWatch.Restart();
+				updateTimer.Enabled = true;
+			}
 		}
 
 		private void curtainForm_Shown(object sender, EventArgs e)
 		{
 			// Fade in
 			showImage = true;
-			effectTimer.Enabled = true;
+			elapsedMiliseconds = 0;
+			stopWatch.Restart();
+			updateTimer.Enabled = true;
 		}
 
-		private void effectTimer_Tick(object sender, EventArgs e)
+		private void updateTimer_Tick(object sender, EventArgs e)
 		{
-			double step;
-			if (fadeLength > 0)
-			{
-				step = effectTimer.Interval / (double)fadeLength;
-			}
-			else
-			{
-				step = 1;
-			}
+			double transparency;
+
 			// Calculate transparency
 			if (showImage)
 			{
-				if (transparency < 1 - step)
-				{
-					transparency += step;
-				}
-				else
-				{
+				if (fadeLength <= 0)
 					transparency = 1;
-					effectTimer.Enabled = false;
+				else 
+					transparency = (stopWatch.ElapsedMilliseconds + elapsedMiliseconds) / (double)fadeLength;
+
+				if (transparency >= 1)
+				{
+					stopWatch.Stop();
+					updateTimer.Enabled = false;
+					transparency = 1;
 				}
 			}
 			else
 			{
-				if (transparency > step)
-				{
-					transparency -= step;
-				}
-				else
-				{
+				if (fadeLength <= 0)
 					transparency = 0;
-					effectTimer.Enabled = false;
+				else
+					transparency = 1 - (stopWatch.ElapsedMilliseconds + elapsedMiliseconds) / (double)fadeLength;
+
+				if (transparency <= 0)
+				{
+					stopWatch.Stop();
+					updateTimer.Enabled = false;
+					transparency = 0;
 				}
 			}
+
 			// Set transparency
 			this.Opacity = transparency;
 

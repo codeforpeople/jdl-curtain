@@ -98,6 +98,35 @@ namespace JDL_Curtain
 			toggleCurtain();
 		}
 
+		private void timerBtn_Click(object sender, EventArgs e)
+		{
+			foreach (Form form in Application.OpenForms)
+			{
+				if (form.Name == "timerForm")
+				{
+					form.Focus();
+					return;
+				}
+			}
+			timerForm timerF = new timerForm();
+			timerF.Show();
+		}
+
+		private void fadeCheckBox_CheckStateChanged(object sender, EventArgs e)
+		{
+			// Enable or disable fade length input and label
+			if (fadeCheckBox.CheckState == CheckState.Checked)
+			{
+				fadeLengthLabel.Enabled = true;
+				fadeLegthInput.Enabled = true;
+			}
+			else if (fadeCheckBox.CheckState == CheckState.Unchecked)
+			{
+				fadeLengthLabel.Enabled = false;
+				fadeLegthInput.Enabled = false;
+			}
+		}
+
 		#endregion
 
 		/// <summary>
@@ -273,21 +302,6 @@ namespace JDL_Curtain
 			}
 
 			updateCurtainState();
-		}
-
-		private void fadeCheckBox_CheckStateChanged(object sender, EventArgs e)
-		{
-			// Enable or disable fade length input and label
-			if (fadeCheckBox.CheckState == CheckState.Checked)
-			{
-				fadeLengthLabel.Enabled = true;
-				fadeLegthInput.Enabled = true;
-			}
-			else if (fadeCheckBox.CheckState == CheckState.Unchecked)
-			{
-				fadeLengthLabel.Enabled = false;
-				fadeLegthInput.Enabled = false;
-			}
 		}
 
 	}
