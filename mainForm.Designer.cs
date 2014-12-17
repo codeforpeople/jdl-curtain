@@ -35,6 +35,7 @@
 			this.fadeLegthInput = new System.Windows.Forms.NumericUpDown();
 			this.fadeLengthLabel = new System.Windows.Forms.Label();
 			this.fadeCheckBox = new System.Windows.Forms.CheckBox();
+			this.timerBtn = new System.Windows.Forms.Label();
 			this.curtainBtn = new System.Windows.Forms.Label();
 			this.browseImageBtn = new System.Windows.Forms.Button();
 			this.imageFileLabel = new System.Windows.Forms.Label();
@@ -42,7 +43,6 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.displayComboBox = new System.Windows.Forms.ComboBox();
 			this.openImageFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.timerBtn = new System.Windows.Forms.Label();
 			this.topBar.SuspendLayout();
 			this.mainContainer.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.fadeLegthInput)).BeginInit();
@@ -159,6 +159,21 @@
 			this.fadeCheckBox.UseVisualStyleBackColor = true;
 			this.fadeCheckBox.CheckStateChanged += new System.EventHandler(this.fadeCheckBox_CheckStateChanged);
 			// 
+			// timerBtn
+			// 
+			this.timerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.timerBtn.BackColor = System.Drawing.Color.Gainsboro;
+			this.timerBtn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.timerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+			this.timerBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.timerBtn.Location = new System.Drawing.Point(266, 225);
+			this.timerBtn.Name = "timerBtn";
+			this.timerBtn.Size = new System.Drawing.Size(119, 39);
+			this.timerBtn.TabIndex = 4;
+			this.timerBtn.Text = "Launch Timer";
+			this.timerBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.timerBtn.Click += new System.EventHandler(this.timerBtn_Click);
+			// 
 			// curtainBtn
 			// 
 			this.curtainBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -230,21 +245,6 @@
 			// 
 			this.openImageFileDialog.Filter = "Image Files|*.png; *.jpg; *.bmp|All files|*.*";
 			this.openImageFileDialog.Title = "Choose Image...";
-			// 
-			// timerBtn
-			// 
-			this.timerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.timerBtn.BackColor = System.Drawing.Color.Gainsboro;
-			this.timerBtn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.timerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.timerBtn.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.timerBtn.Location = new System.Drawing.Point(266, 225);
-			this.timerBtn.Name = "timerBtn";
-			this.timerBtn.Size = new System.Drawing.Size(119, 39);
-			this.timerBtn.TabIndex = 4;
-			this.timerBtn.Text = "Launch Timer";
-			this.timerBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.timerBtn.Click += new System.EventHandler(this.timerBtn_Click);
 			// 
 			// mainForm
 			// 

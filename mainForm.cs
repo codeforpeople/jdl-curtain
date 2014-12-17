@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ResizeForm;
 
 namespace JDL_Curtain
 {
@@ -86,6 +87,9 @@ namespace JDL_Curtain
 		private void mainForm_Load(object sender, EventArgs e)
 		{
 			scanScreens();
+			ResizableForm f = new ResizableForm();
+			Control[] controls = {mainContainer, topBar, topBarTitle};
+			f.MakeFormResizable(this, controls, 10, new Size(400, 300), new Size(700, 600), ResizeLocation.BottomRight | ResizeLocation.TopLeft);
 		}
 
 		private void displayComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -302,6 +306,133 @@ namespace JDL_Curtain
 			}
 
 			updateCurtainState();
+		}
+
+	}
+}
+
+namespace ResizeForm
+{
+	public enum ResizeLocation
+	{
+		Top = 1,
+		Bottom = 1 << 1,
+		Left = 1 << 2,
+		Right = 1 << 3,
+		TopLeft = 1 << 4,
+		TopRight = 1 << 5,
+		BottomLeft = 1 << 6,
+		BottomRight = 1 << 7,
+		Center = 1 << 8
+	}
+
+	public class ResizableForm
+	{
+		private Form form;
+		private int margin;
+		private Control[] controls;
+		private Size minSize;
+		private Size maxSize;
+		private ResizeLocation locations;
+		//private int x, y;
+		//private bool isDragging;
+
+		/// <summary>
+		/// Maake a borderless form resizable!
+		/// </summary>
+		/// <param name="form">The form you want to make resizable</param>
+		/// <param name="controls">The controls that respond to mouse events</param>
+		/// <param name="margin">Drag margin</param>
+		/// <param name="minSize">Form will not be smaller than this</param>
+		/// <param name="maxSize">Form will not be bigger than this</param>
+		/// <param name="locations">Which sides/corners can be dragged to resize the form</param>
+		public void MakeFormResizable(Form form, Control[] controls, int margin, Size minSize, Size maxSize, ResizeLocation locations)
+		{
+			this.form = form;
+			this.controls = controls;
+			this.margin = margin;
+			this.minSize = minSize;
+			this.maxSize = maxSize;
+			this.locations = locations;
+
+			foreach (Control control in this.controls)
+			{
+				control.MouseEnter += mouseEnter;
+				control.MouseLeave += mouseLeave;
+				control.MouseDown += mouseDown;
+				control.MouseUp += mouseUp;
+				control.MouseMove += mouseMove;
+			}
+		}
+
+		private void mouseEnter(object sender, EventArgs e)
+		{
+			Point mousePos = new Point(Control.MousePosition.X - form.Location.X, Control.MousePosition.Y - form.Location.Y);
+			Control control;
+			try
+			{
+				control = (Control)sender;
+			}
+			catch
+			{
+				return;
+			}
+			if (mousePos.X <= margin)
+			{
+				if (mousePos.Y <= margin)
+					control.Cursor = Cursors.SizeNWSE;
+				else if (mousePos.Y >= form.Height - margin)
+					control.Cursor = Cursors.SizeNESW;
+				else
+					control.Cursor = Cursors.SizeWE;
+			}
+			else if (mousePos.X >= form.Width - margin)
+			{
+				if (mousePos.Y <= margin)
+					control.Cursor = Cursors.SizeNESW;
+				else if (mousePos.Y >= form.Height - margin)
+					control.Cursor = Cursors.SizeNWSE;
+				else
+					control.Cursor = Cursors.SizeWE;
+			}
+			else
+			{
+				if (mousePos.Y <= margin)
+					control.Cursor = Cursors.SizeNS;
+				else if (mousePos.Y >= form.Height - margin)
+					control.Cursor = Cursors.SizeNS;
+				else
+					control.Cursor = Cursors.Default;
+			}
+		}
+
+		private void mouseLeave(object sender, EventArgs e)
+		{
+			Control control;
+			try
+			{
+				control = (Control)sender;
+			}
+			catch
+			{
+				return;
+			}
+			control.Cursor = Cursors.Default;
+		}
+
+		private void mouseUp(object sender, MouseEventArgs e)
+		{
+
+		}
+
+		private void mouseDown(object sender, MouseEventArgs e)
+		{
+
+		}
+
+		private void mouseMove(object sender, MouseEventArgs e)
+		{
+			mouseEnter(sender, e);
 		}
 
 	}
