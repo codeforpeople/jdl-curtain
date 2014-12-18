@@ -56,13 +56,14 @@
 			this.mainContainer.Location = new System.Drawing.Point(0, 24);
 			this.mainContainer.Name = "mainContainer";
 			this.mainContainer.Padding = new System.Windows.Forms.Padding(10);
-			this.mainContainer.Size = new System.Drawing.Size(400, 226);
+			this.mainContainer.Size = new System.Drawing.Size(400, 196);
 			this.mainContainer.TabIndex = 3;
 			// 
 			// resetTimerBtn
 			// 
+			this.resetTimerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.resetTimerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.resetTimerBtn.Location = new System.Drawing.Point(275, 166);
+			this.resetTimerBtn.Location = new System.Drawing.Point(275, 136);
 			this.resetTimerBtn.Name = "resetTimerBtn";
 			this.resetTimerBtn.Size = new System.Drawing.Size(100, 40);
 			this.resetTimerBtn.TabIndex = 1;
@@ -72,10 +73,11 @@
 			// 
 			// stopTimerBtn
 			// 
+			this.stopTimerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.stopTimerBtn.Enabled = false;
 			this.stopTimerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
 			this.stopTimerBtn.ForeColor = System.Drawing.Color.Maroon;
-			this.stopTimerBtn.Location = new System.Drawing.Point(150, 166);
+			this.stopTimerBtn.Location = new System.Drawing.Point(150, 136);
 			this.stopTimerBtn.Name = "stopTimerBtn";
 			this.stopTimerBtn.Size = new System.Drawing.Size(100, 40);
 			this.stopTimerBtn.TabIndex = 1;
@@ -85,9 +87,10 @@
 			// 
 			// startTimerBtn
 			// 
+			this.startTimerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.startTimerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
 			this.startTimerBtn.ForeColor = System.Drawing.Color.DarkGreen;
-			this.startTimerBtn.Location = new System.Drawing.Point(25, 166);
+			this.startTimerBtn.Location = new System.Drawing.Point(25, 136);
 			this.startTimerBtn.Name = "startTimerBtn";
 			this.startTimerBtn.Size = new System.Drawing.Size(100, 40);
 			this.startTimerBtn.TabIndex = 1;
@@ -101,9 +104,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.timeLabel.Font = new System.Drawing.Font("Courier New", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.timeLabel.Location = new System.Drawing.Point(10, 40);
+			this.timeLabel.Location = new System.Drawing.Point(10, 30);
 			this.timeLabel.Name = "timeLabel";
-			this.timeLabel.Size = new System.Drawing.Size(380, 70);
+			this.timeLabel.Size = new System.Drawing.Size(380, 76);
 			this.timeLabel.TabIndex = 0;
 			this.timeLabel.Text = "00:00";
 			this.timeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -162,12 +165,13 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(400, 250);
+			this.ClientSize = new System.Drawing.Size(400, 220);
 			this.Controls.Add(this.mainContainer);
 			this.Controls.Add(this.topBar);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Name = "timerForm";
 			this.Text = "Timer";
+			this.Load += new System.EventHandler(this.timerForm_Load);
 			this.mainContainer.ResumeLayout(false);
 			this.topBar.ResumeLayout(false);
 			this.ResumeLayout(false);

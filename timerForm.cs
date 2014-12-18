@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using ResizeForm;
 
 namespace JDL_Curtain
 {
@@ -103,6 +104,13 @@ namespace JDL_Curtain
 		{
 			useMiliseconds = !useMiliseconds;
 			updateTimeLabel();
+		}
+
+		private void timerForm_Load(object sender, EventArgs e)
+		{
+			ResizableForm f = new ResizableForm();
+			Control[] controls = {mainContainer, topBar, topBarTitle};
+			f.MakeFormResizable(this, 10, controls, ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight, this.Size, new Size(Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height));
 		}
 
 		private void updateTimeLabel()
