@@ -90,7 +90,7 @@ namespace JDL_Curtain
 			scanScreens();
 			ResizableForm f = new ResizableForm();
 			Control[] controls = {mainContainer, topBar, topBarTitle};
-			f.MakeFormResizable(this, 10, controls, ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight, new Size(300, 170), new Size(Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height));
+			f.MakeFormResizable(this, 10, controls, ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight | ResizeLocation.TopLeft, new Size(300, 170), new Size(Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height));
 		}
 
 		private void displayComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -229,8 +229,8 @@ namespace JDL_Curtain
 					// Name
 					newCurtainForm.Name = selectedScreen.DeviceName;
 					// Bounds
-					//newCurtainForm.Bounds = selectedScreen.Bounds;
-					newCurtainForm.SetBounds(selectedScreen.Bounds.X, selectedScreen.Bounds.Y, selectedScreen.Bounds.Width / 2, selectedScreen.Bounds.Height / 2);
+					newCurtainForm.Bounds = selectedScreen.Bounds;
+					//newCurtainForm.SetBounds(selectedScreen.Bounds.X, selectedScreen.Bounds.Y, selectedScreen.Bounds.Width / 2, selectedScreen.Bounds.Height / 2);
 					// Fade length
 					if (fadeCheckBox.CheckState == CheckState.Checked)
 					{
@@ -316,13 +316,13 @@ namespace ResizeForm
 {
 	public enum ResizeLocation
 	{
-		Top = 1, // Buggy
+		Top = 1, // Less Buggy
 		Bottom = 1 << 1,
-		Left = 1 << 2, // Buggy
+		Left = 1 << 2, // Less Buggy
 		Right = 1 << 3,
-		TopLeft = 1 << 4, // Very buggy
-		TopRight = 1 << 5, // Buggy
-		BottomLeft = 1 << 6, // Buggy
+		TopLeft = 1 << 4, // Less buggy
+		TopRight = 1 << 5, // Less Buggy
+		BottomLeft = 1 << 6, // Less Buggy
 		BottomRight = 1 << 7,
 		All = (1<<7) + (1<<6) + (1<<5) + (1<<4) + (1<<3) + (1<<2) + (1<<1) + 1,
 		Center = 1 << 8 // Not used
@@ -337,6 +337,7 @@ namespace ResizeForm
 		private Size maxSize;
 		private ResizeLocation locations;
 		private ResizeLocation draggingLocation;
+		private Point bottomRightPos;
 		private bool isDragging;
 
 		// Too lazy for any overloads
@@ -431,9 +432,13 @@ namespace ResizeForm
 
 		private void mouseDown(object sender, MouseEventArgs e)
 		{
-			isDragging = true;
 			draggingLocation = getMouseLocation();
-			mouseMove(sender, e);
+			if (Convert.ToBoolean(draggingLocation & locations))
+			{
+				isDragging = true;
+				bottomRightPos = new Point(form.Location.X + form.Width, form.Location.Y + form.Height);
+				mouseMove(sender, e);
+			}
 		}
 
 		private void mouseMove(object sender, MouseEventArgs e)
@@ -447,14 +452,14 @@ namespace ResizeForm
 				switch (draggingLocation)
 				{
 					case ResizeLocation.Top:
-						formSize.Height += formLocation.Y - mousePos.Y;
+						formSize.Height = bottomRightPos.Y - mousePos.Y;
 						formLocation.Y = mousePos.Y;
 						break;
 					case ResizeLocation.Bottom:
 						formSize.Height = mousePos.Y - formLocation.Y;
 						break;
 					case ResizeLocation.Left:
-						formSize.Width += formLocation.X - mousePos.X;
+						formSize.Width = bottomRightPos.X - mousePos.X;
 						formLocation.X = mousePos.X;
 						break;
 					case ResizeLocation.Right:
@@ -462,19 +467,19 @@ namespace ResizeForm
 						break;
 
 					case ResizeLocation.TopLeft:
-						formSize.Height += formLocation.Y - mousePos.Y;
+						formSize.Height = bottomRightPos.Y - mousePos.Y;
 						formLocation.Y = mousePos.Y;
-						formSize.Width += formLocation.X - mousePos.X;
+						formSize.Width = bottomRightPos.X - mousePos.X;
 						formLocation.X = mousePos.X;
 						break;
 					case ResizeLocation.TopRight:
-						formSize.Height += formLocation.Y - mousePos.Y;
+						formSize.Height = bottomRightPos.Y - mousePos.Y;
 						formLocation.Y = mousePos.Y;
 						formSize.Width = mousePos.X - formLocation.X;
 						break;
 					case ResizeLocation.BottomLeft:
 						formSize.Height = mousePos.Y - formLocation.Y;
-						formSize.Width += formLocation.X - mousePos.X;
+						formSize.Width = bottomRightPos.X - mousePos.X;
 						formLocation.X = mousePos.X;
 						break;
 					case ResizeLocation.BottomRight:
@@ -513,9 +518,17 @@ namespace ResizeForm
 				}
 
 				// Set new size and location
-				if (!dontMoveX) form.Location = new Point(formLocation.X, form.Location.Y);
-				if (!dontMoveY) form.Location = new Point(form.Location.X, formLocation.Y);
+				ResizeLocation special = ResizeLocation.Top | ResizeLocation.TopLeft | ResizeLocation.BottomLeft | ResizeLocation.TopRight | ResizeLocation.Left;
+				if (Convert.ToBoolean(draggingLocation & special))
+				{
+					if (dontMoveX)
+						formLocation.X = bottomRightPos.X - formSize.Width;
+					if (dontMoveY)
+						formLocation.Y = bottomRightPos.Y - formSize.Height;
+				}
+				form.Location = formLocation;
 				form.Size = formSize;
+
 			}
 			// Else update cursor
 			else
