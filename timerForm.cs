@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
-using ResizeForm;
+using ResizeControl;
 
 namespace JDL_Curtain
 {
@@ -38,7 +38,8 @@ namespace JDL_Curtain
 
 		private void topBar_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (isDragging)
+			Control c = (Control)sender;
+			if (isDragging && c.Cursor == Cursors.Default)
 			{
 				this.Location = new Point(MousePosition.X - draggingX, MousePosition.Y - draggingY);
 			}
@@ -108,9 +109,9 @@ namespace JDL_Curtain
 
 		private void timerForm_Load(object sender, EventArgs e)
 		{
-			ResizableForm f = new ResizableForm();
-			Control[] controls = {mainContainer, topBar, topBarTitle};
-			f.MakeFormResizable(this, 10, controls, ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight, this.Size, new Size(Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height));
+			ResizableControl f = new ResizableControl();
+			Control[] children = { topBar, topBarTitle, mainContainer };
+			f.MakeControlResizable(this, 10, children, ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight, this.Size, new Size(Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height));
 		}
 
 		private void updateTimeLabel()

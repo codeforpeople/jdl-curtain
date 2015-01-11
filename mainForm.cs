@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ResizeForm;
+using ResizeControl;
 
 namespace JDL_Curtain
 {
@@ -55,7 +55,7 @@ namespace JDL_Curtain
 		private void exitBtn_MouseEnter(object sender, EventArgs e)
 		{
 			Label thisLabel = (Label) sender;
-			thisLabel.BackColor = Color.Azure;
+			thisLabel.BackColor = Color.FromArgb(145, 176, 196);
 		}
 
 		private void exitBtn_MouseLeave(object sender, EventArgs e)
@@ -88,9 +88,15 @@ namespace JDL_Curtain
 		private void mainForm_Load(object sender, EventArgs e)
 		{
 			scanScreens();
-			ResizableForm f = new ResizableForm();
-			Control[] controls = {mainContainer, topBar, topBarTitle};
-			f.MakeFormResizable(this, 10, controls, ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight | ResizeLocation.TopLeft, new Size(300, 170), new Size(Screen.FromControl(this).Bounds.Width, Screen.FromControl(this).Bounds.Height));
+			// Make form resizable
+			ResizableControl f = new ResizableControl();
+			Control[] children = { topBar, topBarTitle, mainContainer };
+			f.MakeControlResizable(this, 
+								   10, 
+								   children, 
+								   ResizeLocation.Bottom | ResizeLocation.Right | ResizeLocation.BottomRight | ResizeLocation.TopLeft, 
+								   new Size(300, 170), 
+								   Screen.FromControl(this).Bounds.Size);
 		}
 
 		private void displayComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -177,13 +183,13 @@ namespace JDL_Curtain
 			if (exists)
 			{
 				curtainBtn.Text = "Conceal Awesome Curtain";
-				curtainBtn.BackColor = Color.Silver;
+				curtainBtn.BackColor = Color.FromArgb(190, 190, 190);
 				isCurtainDeployed = true;
 			}
 			else
 			{
 				curtainBtn.Text = "Deploy Awesome Curtain";
-				curtainBtn.BackColor = Color.Gainsboro;
+				curtainBtn.BackColor = Color.FromArgb(224, 224, 224);
 				isCurtainDeployed = false;
 			}
 		}
@@ -312,78 +318,78 @@ namespace JDL_Curtain
 	}
 }
 
-namespace ResizeForm
+namespace ResizeControl
 {
 	public enum ResizeLocation
 	{
-		Top = 1, // Less Buggy
+		Top = 1,
 		Bottom = 1 << 1,
-		Left = 1 << 2, // Less Buggy
+		Left = 1 << 2,
 		Right = 1 << 3,
-		TopLeft = 1 << 4, // Less buggy
-		TopRight = 1 << 5, // Less Buggy
-		BottomLeft = 1 << 6, // Less Buggy
+		TopLeft = 1 << 4,
+		TopRight = 1 << 5,
+		BottomLeft = 1 << 6,
 		BottomRight = 1 << 7,
 		All = (1<<7) + (1<<6) + (1<<5) + (1<<4) + (1<<3) + (1<<2) + (1<<1) + 1,
-		Center = 1 << 8 // Not used
+		Center = 1 << 8
 	}
 
-	public class ResizableForm
+	public class ResizableControl
 	{
-		private Form form;
-		private int margin;
-		private Control[] controls;
+		private Control control;
+		private int handleSize;
 		private Size minSize;
 		private Size maxSize;
 		private ResizeLocation locations;
 		private ResizeLocation draggingLocation;
-		private Point bottomRightPos;
+		private Point bottomRightPos; // Absolute
 		private bool isDragging;
 
 		// Too lazy for any overloads
 		/// <summary>
-		/// Make a borderless form resizable!
+		/// Make a control form resizable
 		/// </summary>
-		/// <param name="form">The form you want to make resizable</param>
-		/// <param name="margin">Margin to drag the form</param>
-		/// <param name="controls">Controls that respond to mouse events (that will be dragged)</param>
-		/// <param name="locations">Which sides/corners can be dragged to resize the form</param>
-		/// <param name="minSize">The form will not be smaller than this</param>
-		/// <param name="maxSize">The form will not be bigger than this</param>
-		public void MakeFormResizable(Form form, int margin, Control[] controls, ResizeLocation locations, Size minSize, Size maxSize)
+		/// <param name="form">The control you want to make resizable</param>
+		/// <param name="handleSize">Margin size to drag the control</param>
+		/// <param name="children">Children controls that respond to mouse events (that will be dragged)</param>
+		/// <param name="locations">Which sides/corners can be dragged to resize the control</param>
+		/// <param name="minSize">Minimum size</param>
+		/// <param name="maxSize">Maximum size</param>
+		public void MakeControlResizable(Control control, int handleSize, Control[] children, ResizeLocation resizeHandles, Size minSize, Size maxSize)
 		{
-			this.form = form;
-			this.controls = controls;
-			this.margin = margin;
+			this.control = control;
+			this.handleSize = handleSize;
+			this.locations = resizeHandles;
 			this.minSize = minSize;
 			this.maxSize = maxSize;
-			this.locations = locations;
 
-			// Mouse events for controls
-			foreach (Control control in this.controls)
-			{
-				control.MouseEnter += mouseEnter;
-				control.MouseLeave += mouseLeave;
-				control.MouseDown += mouseDown;
-				control.MouseUp += mouseUp;
-				control.MouseMove += mouseMove;
-			}
+			// Mouse events for children
+			if (children != null)
+				if (children.Length > 0)
+					foreach (Control child in children)
+					{
+						child.MouseEnter += mouseEnter;
+						child.MouseLeave += mouseLeave;
+						child.MouseDown += mouseDown;
+						child.MouseUp += mouseUp;
+						child.MouseMove += mouseMove;
+					}
 
-			// Mouse events form the form
-			form.MouseEnter += mouseEnter;
-			form.MouseLeave += mouseLeave;
-			form.MouseDown += mouseDown;
-			form.MouseUp += mouseUp;
-			form.MouseMove += mouseMove;
+			// Mouse events for the control itself
+			control.MouseEnter += mouseEnter;
+			control.MouseLeave += mouseLeave;
+			control.MouseDown += mouseDown;
+			control.MouseUp += mouseUp;
+			control.MouseMove += mouseMove;
 		}
 
 		private void mouseEnter(object sender, EventArgs e)
 		{
 			// Get the control the mouse is over
-			Control control;
+			Control senderControl;
 			try
 			{
-				control = (Control)sender;
+				senderControl = (Control)sender;
 			}
 			catch
 			{
@@ -395,33 +401,34 @@ namespace ResizeForm
 			if (Convert.ToBoolean(location & locations))
 			{
 				if (location == ResizeLocation.TopLeft || location == ResizeLocation.BottomRight)
-					control.Cursor = Cursors.SizeNWSE;
+					senderControl.Cursor = Cursors.SizeNWSE;
 				else if (location == ResizeLocation.TopRight || location == ResizeLocation.BottomLeft)
-					control.Cursor = Cursors.SizeNESW;
+					senderControl.Cursor = Cursors.SizeNESW;
 				else if (location == ResizeLocation.Top || location == ResizeLocation.Bottom)
-					control.Cursor = Cursors.SizeNS;
+					senderControl.Cursor = Cursors.SizeNS;
 				else if (location == ResizeLocation.Left || location == ResizeLocation.Right)
-					control.Cursor = Cursors.SizeWE;
+					senderControl.Cursor = Cursors.SizeWE;
 				else
-					control.Cursor = Cursors.Default;
+					senderControl.Cursor = Cursors.Default;
 			}
 			else
 			{
-				control.Cursor = Cursors.Default;
+				senderControl.Cursor = Cursors.Default;
 			}
 		}
 
 		private void mouseLeave(object sender, EventArgs e)
 		{
-			Control control;
+			Control senderControl;
 			try
 			{
-				control = (Control)sender;
+				senderControl = (Control)sender;
 			}
 			catch
 			{
 				return;
 			}
+
 			control.Cursor = Cursors.Default;
 		}
 
@@ -436,55 +443,57 @@ namespace ResizeForm
 			if (Convert.ToBoolean(draggingLocation & locations))
 			{
 				isDragging = true;
-				bottomRightPos = new Point(form.Location.X + form.Width, form.Location.Y + form.Height);
+				bottomRightPos = control.PointToScreen(new Point(control.Size));
 				mouseMove(sender, e);
 			}
 		}
 
 		private void mouseMove(object sender, MouseEventArgs e)
 		{
-			// Resize if dragging
-			Size formSize = form.Size;
-			Point formLocation = form.Location;
+			Size controlSize = control.Size;
+			// Absolute positions
+			Point controlLocation = control.PointToScreen(Point.Empty);
 			Point mousePos = Control.MousePosition;
+
+			// Resize if dragging
 			if (isDragging)
 			{
 				switch (draggingLocation)
 				{
 					case ResizeLocation.Top:
-						formSize.Height = bottomRightPos.Y - mousePos.Y;
-						formLocation.Y = mousePos.Y;
+						controlSize.Height = bottomRightPos.Y - mousePos.Y;
+						controlLocation.Y = mousePos.Y;
 						break;
 					case ResizeLocation.Bottom:
-						formSize.Height = mousePos.Y - formLocation.Y;
+						controlSize.Height = mousePos.Y - controlLocation.Y;
 						break;
 					case ResizeLocation.Left:
-						formSize.Width = bottomRightPos.X - mousePos.X;
-						formLocation.X = mousePos.X;
+						controlSize.Width = bottomRightPos.X - mousePos.X;
+						controlLocation.X = mousePos.X;
 						break;
 					case ResizeLocation.Right:
-						formSize.Width = mousePos.X - formLocation.X;
+						controlSize.Width = mousePos.X - controlLocation.X;
 						break;
 
 					case ResizeLocation.TopLeft:
-						formSize.Height = bottomRightPos.Y - mousePos.Y;
-						formLocation.Y = mousePos.Y;
-						formSize.Width = bottomRightPos.X - mousePos.X;
-						formLocation.X = mousePos.X;
+						controlSize.Height = bottomRightPos.Y - mousePos.Y;
+						controlLocation.Y = mousePos.Y;
+						controlSize.Width = bottomRightPos.X - mousePos.X;
+						controlLocation.X = mousePos.X;
 						break;
 					case ResizeLocation.TopRight:
-						formSize.Height = bottomRightPos.Y - mousePos.Y;
-						formLocation.Y = mousePos.Y;
-						formSize.Width = mousePos.X - formLocation.X;
+						controlSize.Height = bottomRightPos.Y - mousePos.Y;
+						controlLocation.Y = mousePos.Y;
+						controlSize.Width = mousePos.X - controlLocation.X;
 						break;
 					case ResizeLocation.BottomLeft:
-						formSize.Height = mousePos.Y - formLocation.Y;
-						formSize.Width = bottomRightPos.X - mousePos.X;
-						formLocation.X = mousePos.X;
+						controlSize.Height = mousePos.Y - controlLocation.Y;
+						controlSize.Width = bottomRightPos.X - mousePos.X;
+						controlLocation.X = mousePos.X;
 						break;
 					case ResizeLocation.BottomRight:
-						formSize.Height = mousePos.Y - formLocation.Y;
-						formSize.Width = mousePos.X - formLocation.X;
+						controlSize.Height = mousePos.Y - controlLocation.Y;
+						controlSize.Width = mousePos.X - controlLocation.X;
 						break;
 					case ResizeLocation.Center:
 						// Nothing
@@ -496,24 +505,24 @@ namespace ResizeForm
 
 				// Size must be inside bounds
 				bool dontMoveX = false, dontMoveY = false;
-				if (formSize.Height < minSize.Height)
+				if (controlSize.Height < minSize.Height)
 				{
-					formSize.Height = minSize.Height;
+					controlSize.Height = minSize.Height;
 					dontMoveY = true;
 				}
-				if (formSize.Width < minSize.Width)
+				if (controlSize.Width < minSize.Width)
 				{
-					formSize.Width = minSize.Width;
+					controlSize.Width = minSize.Width;
 					dontMoveX = true;
 				}
-				if (formSize.Height > maxSize.Height)
+				if (controlSize.Height > maxSize.Height)
 				{
-					formSize.Height = maxSize.Height;
+					controlSize.Height = maxSize.Height;
 					dontMoveY = true;
 				}
-				if (formSize.Width > maxSize.Width)
+				if (controlSize.Width > maxSize.Width)
 				{
-					formSize.Width = maxSize.Width;
+					controlSize.Width = maxSize.Width;
 					dontMoveX = true;
 				}
 
@@ -522,13 +531,18 @@ namespace ResizeForm
 				if (Convert.ToBoolean(draggingLocation & special))
 				{
 					if (dontMoveX)
-						formLocation.X = bottomRightPos.X - formSize.Width;
+						controlLocation.X = bottomRightPos.X - controlSize.Width;
 					if (dontMoveY)
-						formLocation.Y = bottomRightPos.Y - formSize.Height;
+						controlLocation.Y = bottomRightPos.Y - controlSize.Height;
 				}
-				form.Location = formLocation;
-				form.Size = formSize;
 
+				// Make location relative
+				Point relativeToControl = control.PointToClient(controlLocation);
+				controlLocation = new Point(control.Location.X + relativeToControl.X, 
+											control.Location.Y + relativeToControl.Y);
+
+				// Set new bound
+				control.SetBounds(controlLocation.X, controlLocation.Y, controlSize.Width, controlSize.Height);
 			}
 			// Else update cursor
 			else
@@ -545,29 +559,29 @@ namespace ResizeForm
 		{
 			Point mousePos = getRelativeMousePoint();
 			ResizeLocation location;
-			if (mousePos.X <= margin)
+			if (mousePos.X <= handleSize)
 			{
-				if (mousePos.Y <= margin)
+				if (mousePos.Y <= handleSize)
 					location = ResizeLocation.TopLeft;
-				else if (mousePos.Y >= form.Height - margin)
+				else if (mousePos.Y >= control.Height - handleSize)
 					location = ResizeLocation.BottomLeft;
 				else
 					location = ResizeLocation.Left;
 			}
-			else if (mousePos.X >= form.Width - margin)
+			else if (mousePos.X >= control.Width - handleSize)
 			{
-				if (mousePos.Y <= margin)
+				if (mousePos.Y <= handleSize)
 					location = ResizeLocation.TopRight;
-				else if (mousePos.Y >= form.Height - margin)
+				else if (mousePos.Y >= control.Height - handleSize)
 					location = ResizeLocation.BottomRight;
 				else
 					location = ResizeLocation.Right;
 			}
 			else
 			{
-				if (mousePos.Y <= margin)
+				if (mousePos.Y <= handleSize)
 					location = ResizeLocation.Top;
-				else if (mousePos.Y >= form.Height - margin)
+				else if (mousePos.Y >= control.Height - handleSize)
 					location = ResizeLocation.Bottom;
 				else
 					location = ResizeLocation.Center;
@@ -581,7 +595,9 @@ namespace ResizeForm
 		/// <returns>The mouse position relative to the form</returns>
 		private Point getRelativeMousePoint()
 		{
-			return new Point(Control.MousePosition.X - form.Location.X, Control.MousePosition.Y - form.Location.Y);
+			return new Point(Control.MousePosition.X - control.PointToScreen(Point.Empty).X, 
+							 Control.MousePosition.Y - control.PointToScreen(Point.Empty).Y);
 		}
 	}
+
 }
